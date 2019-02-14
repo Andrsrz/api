@@ -47,5 +47,26 @@ export const queries = (req, res, next) => {
     .catch(next)
 }
 
+// Maneja la creación o actualización de de un documento
+// (si no existe, lo crea)
+export const upsert = (req, res, next) => {
+  const DataObject = makeObject(req.params.dataCollection)
+  const filter = aqp(req.query).filter
+  const update = req.body
+
+  console.log(`params = ${DataObject}`)
+  console.log("query =>")
+  console.dir(filter)
+  console.log("body =>")
+  console.dir(update)
+
+  // DataObject.findOneAndUpdate(filter, update, { upsert: true }, (err) => {
+  //   if (err) {
+  //     //
+  //   }
+
+  // })
+}
+
 export const index = ({ querymen: { query, select, cursor } }, res, next) =>
   res.status(200).json([])

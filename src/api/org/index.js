@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { middleware as query } from 'querymen'
-import { index, queries } from './controller'
+import { index, queries, upsert } from './controller'
 
 const router = new Router()
 
@@ -18,5 +18,8 @@ router.get('/',
  */
 router.get('/:dataCollection',
   queries)
+
+//
+router.post('/:dataCollection', upsert)
 
 export default router
