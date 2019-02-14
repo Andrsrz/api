@@ -60,13 +60,8 @@ export const upsert = (req, res, next) => {
   console.log("body =>")
   console.dir(update)
 
-  // DataObject.findOneAndUpdate(filter, update, { upsert: true }, (err) => {
-  //   if (err) {
-  //     //
-  //   }
-
-  // })
-}
+  DataObject.findOneAndUpdate(filter, update, { upsert: true }, (err) => {if (err) return res.send(500, {error: err})
+	  else return res.send("Succesfully saved")})}
 
 export const index = ({ querymen: { query, select, cursor } }, res, next) =>
   res.status(200).json([])
