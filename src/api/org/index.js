@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { middleware as query } from 'querymen'
-import { index, queries, upsert } from './controller'
+import { index, queries, create, update, joins, uniques } from './controller'
 
 const router = new Router()
 
@@ -19,7 +19,23 @@ router.get('/',
 router.get('/:dataCollection',
   queries)
 
-//
-router.post('/:dataCollection', upsert)
+/**
+* default query params --> 
+* @local local=publisher
+* @foreign foreign=publisher
+* @as as=publisher
+*/
+// Crea una unión entre dos colecciones
+router.get('/:firstCollection/join/:secondCollection', joins)
+
+// Obtiene un filtrado de dataset de acuerdo a su identificador
+// además de ello, hace un join con el objeto publishers
+router.get('/:dataCollection/unique/:identifier', uniques)
+
+// Guarda coleciones de datos
+router.post('/:dataCollection', create)
+
+// Actualiza colecciones de datos
+router.put('/:dataColeccion:queryToUpdate', update)
 
 export default router

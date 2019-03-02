@@ -49,19 +49,91 @@ export const queries = (req, res, next) => {
 
 // Maneja la creación o actualización de de un documento
 // (si no existe, lo crea)
-export const upsert = (req, res, next) => {
+export const create = (req, res, next) => {
   const DataObject = makeObject(req.params.dataCollection)
   const filter = aqp(req.query).filter
   const update = req.body
 
-  console.log(`params = ${DataObject}`)
+  //console.log(`params = ${DataObject}`)
   console.log("query =>")
   console.dir(filter)
   console.log("body =>")
   console.dir(update)
 
-  DataObject.findOneAndUpdate(filter, update, { upsert: true }, (err) => {if (err) return res.send(500, {error: err})
-	  else return res.send("Succesfully saved")})}
+  DataObject.create(update, (err) => {
+    if (err) return res.send(500, {error: err})
+    else return res.status(200).json({
+      response: "ok",
+      message: "Succesfully saved"
+    })
+  })
+}
+
+export const update = (req, res, next) => {
+  const DataObject = makeObject(req.params.dataCollection)
+  const filter = aqp(req.query).filter
+  const update = req.body
+
+  //console.log(`params = ${DataObject}`)
+  console.log("queryToUpdate =>")
+  console.dir(filter)
+  console.log("body =>")
+  console.dir(update)
+
+  DataObject.findOneAndUpdate(filt, update, { upsert: true }, (err) => {
+    if (err) return res.send(500, {error: err})
+    else return res.status(200).json({
+      response: "ok",
+      message: "Succesfully saved"
+    })
+  })
+}
+
+// Crea un join() entre dos colecciones
+export const joins = (req, res, next) => {
+  const DataObject = makeObject(req.params.firstCollection)
+  const query = aqp(req.query).filter
+  let _as = query.as || 'publisher'
+
+  DataObject.aggregate()
+    .lookup({
+      from: req.params.secondCollection,
+      localField: query.local || 'publisher',
+      foreignField: query.foreign || 'publisher',
+      as: _as
+    })
+    .unwind(_as)
+    .exec((err, result) => {
+      if (err) return handleError(err);
+      res.status(200).json({
+        response: "ok",
+        results: result
+      })
+    })
+}
+
+// Obtiene un filtrado de dataset de acuerdo a su identificador
+// además de ello, hace un join con el objeto publishers
+export const uniques = (req, res, next) => {
+  const DataObject = makeObject(req.params.dataCollection)
+
+  DataObject.aggregate()
+    .match({ identifier: req.params.identifier })
+    .lookup({
+      from: 'publishers',
+      localField: 'publisher',
+      foreignField: 'publisher',
+      as: "publisher"
+    })
+    .unwind('$publisher')
+    .exec((err, result) => {
+      if (err) return handleError(err);
+      res.status(200).json({
+        response: "ok",
+        results: result
+      })
+    })
+}
 
 export const index = ({ querymen: { query, select, cursor } }, res, next) =>
   res.status(200).json([])
