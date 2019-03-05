@@ -36,6 +36,6 @@ router.get('/:dataCollection/unique/:identifier', uniques)
 router.post('/:dataCollection', create)
 
 // Actualiza colecciones de datos
-router.put('/:dataColeccion:queryToUpdate', update)
+router.put('/:dataColeccion', update)
 
 export default router

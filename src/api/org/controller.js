@@ -74,13 +74,7 @@ export const update = (req, res, next) => {
   const filter = aqp(req.query).filter
   const update = req.body
 
-  //console.log(`params = ${DataObject}`)
-  console.log("queryToUpdate =>")
-  console.dir(filter)
-  console.log("body =>")
-  console.dir(update)
-
-  DataObject.findOneAndUpdate(filt, update, { upsert: true }, (err) => {
+  DataObject.findOneAndUpdate(filter, update, { upsert: true }, (err) => {
     if (err) return res.send(500, {error: err})
     else return res.status(200).json({
       response: "ok",
