@@ -1,7 +1,32 @@
 import { Router } from 'express'
 import org from './org'
+var session = require('express-session')
 
 const router = new Router()
+
+var sess = {
+  secret: 'keyboard cat',
+  cookie: {}
+}
+
+if (router.get('env') === 'production') {
+  router.set('trust proxy', 1) // trust first proxy
+  sess.cookie.secure = true // serve secure cookies
+}
+
+router.use(session(sess));
+console.log("STARTED SESS MGMT");
+
+function secure(req,res,next){
+  console.log("usuario: ", req.session.currentUser)
+  console.log(req.session)
+  if(req.session.currentUser){
+    next(); }
+  else{
+    res.redirect('/login'); }}
+
+router.post('/', secure);
+router.put('/', secure);
 
 router.use('/', org)
 
