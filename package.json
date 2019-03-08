@@ -2,7 +2,7 @@
   "name": "api",
   "version": "0.0.0",
   "description": "Front process for the 'BUDA' platform",
-  "author": "Vladimir Galicia <hola@the-vladman.me>", 
+  "author": "Vladimir Galicia <hola@the-vladman.me>",
   "main": "src",
   "private": true,
   "scripts": {
@@ -60,6 +60,7 @@
     "morgan": "^1.7.0",
     "querymen": "^2.1.3",
     "request": "^2.83.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "saml-client-express": "git+ssh://git@gitlab.com/mxabierto/saml-client-express.git"
   }
 }
