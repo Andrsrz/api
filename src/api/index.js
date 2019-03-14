@@ -1,12 +1,18 @@
 import { Router } from 'express'
 import org from './org'
 var session = require('express-session')
-
+require('dotenv').load()
 const router = new Router()
-
+const MongoStore = require('connect-mongo')(session);
+const secret = process.env.SESSION_SECRET || "este secret es para pruebas porque el bueno no debe estar commiteado en el repo";
+const storeurl = process.env.SESSION_MONGO_URL || "mongodb://10.233.2.65:27017/sessions";
 var sess = {
-  secret: 'keyboard cat',
-  cookie: {}
+  secret: secret,
+  store: new MongoStore({
+      url: storeurl,
+      ttl: 30 * 24 * 60 * 60 // = 30 días
+    }),
+  fallbackMemory: true
 }
 
 if (router.get('env') === 'production') {
@@ -15,7 +21,6 @@ if (router.get('env') === 'production') {
 }
 
 router.use(session(sess));
-console.log("STARTED SESS MGMT");
 
 function secure(req,res,next){
   console.log("usuario: ", req.session.currentUser)
