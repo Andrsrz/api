@@ -82,6 +82,13 @@ export const joins = (req, res, next) => {
   const DataObject = makeObject(req.params.firstCollection)
   const query = aqp(req.query).filter
   let _as = query.as || 'publisher'
+  
+  // Crea un buscador de texto y
+  // elimina el atributo 'text'
+  if (query.text) {
+    query.$text = { $search: query.text }
+    delete query['text']
+  }
 
   DataObject.aggregate()
     .match(query)
