@@ -54,12 +54,6 @@ export const create = (req, res, next) => {
   const filter = aqp(req.query).filter
   const update = req.body
 
-  //console.log(`params = ${DataObject}`)
-  console.log("query =>")
-  console.dir(filter)
-  console.log("body =>")
-  console.dir(update)
-
   DataObject.create(update, (err) => {
     if (err) return res.send(500, {error: err})
     else return res.status(200).json({
@@ -88,8 +82,16 @@ export const joins = (req, res, next) => {
   const DataObject = makeObject(req.params.firstCollection)
   const query = aqp(req.query).filter
   let _as = query.as || 'publisher'
+  
+  // Crea un buscador de texto y
+  // elimina el atributo 'text'
+  if (query.text) {
+    query.$text = { $search: query.text }
+    delete query['text']
+  }
 
   DataObject.aggregate()
+    .match(query)
     .lookup({
       from: req.params.secondCollection,
       localField: query.local || 'publisher',
