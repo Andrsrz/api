@@ -1,31 +1,34 @@
 
 import { success, notFound } from '../../services/response/'
 import { makeObject } from '../../services/dataCollection/'
-import mongoose from 'mongoose'
 import aqp from 'api-query-params'
 
-
-export const queries = (req, res, next) => {
+// Lógica de selección de $skip y $limit para paginados
+function get_pagination_datas(query) {
   const max_page_size = 100
-  const DataObject = makeObject(req.params.dataCollection)
-  const query = aqp(req.query)
+
   if (query.filter.pageSize) {
     query.limit = query.filter.pageSize
     delete query.filter.pageSize
-  }else{
+  } else {
     query.limit = max_page_size
   }
   if (query.filter.page) {
     var aux = parseInt(query.filter.page)
 
-    if(aux > 0){
-      --aux
-    }else{
-      aux = 1
-    }
+    if (aux > 0) --aux
+    else aux = 1
+
     query.skip = aux * query.limit
     delete query.filter.page
   }
+  return query
+}
+
+export const queries = (req, res, next) => {
+  const DataObject = makeObject(req.params.dataCollection)
+  const query = get_pagination_datas(aqp(req.query))
+
   DataObject.count(query.filter)
     .then(total =>
       DataObject
@@ -77,7 +80,7 @@ export const update = (req, res, next) => {
   })
 }
 
-// Crea un join() entre dos colecciones
+// Crea un join() entre dataset y publisher
 export const joins = (req, res, next) => {
   const DataObject = makeObject(req.params.firstCollection)
   const query = aqp(req.query).filter
@@ -90,21 +93,34 @@ export const joins = (req, res, next) => {
     delete query['text']
   }
 
-  DataObject.aggregate()
-    .match(query)
-    .lookup({
-      from: req.params.secondCollection,
-      localField: query.local || 'publisher',
-      foreignField: query.foreign || 'publisher',
-      as: _as
-    })
-    .unwind(_as)
-    .exec((err, result) => {
-      if (err) return handleError(err);
-      res.status(200).json({
-        response: "ok",
-        results: result
-      })
+  // Obtiene la lógica de selección para: $skip y $limit
+  let queryPag = get_pagination_datas(aqp(req.query))
+
+  DataObject.count() // Sólo para obtener el total de registros
+    .then(total => {
+      DataObject.aggregate()
+        .match(queryPag.filter)
+        .lookup({
+          from: req.params.secondCollection,
+          localField: query.local || 'publisher',
+          foreignField: query.foreign || 'publisher',
+          as: _as
+        })
+        .unwind(_as)
+        .skip(queryPag.skip || 0)
+        .limit(queryPag.limit)
+        .exec((err, result) => {
+          if (err) return handleError(err)
+
+          res.status(200).json({
+            pagination: {
+              pageSize: queryPag.limit,
+              page: parseInt((queryPag.skip || 0) / queryPag.limit) + 1,
+              total
+            },
+            results: result.map((DataObject) => DataObject)
+          })
+        })
     })
 }
 
@@ -122,11 +138,12 @@ export const uniques = (req, res, next) => {
       as: "publisher"
     })
     .unwind('$publisher')
-    .exec((err, result) => {
+    .exec((err, results) => {
       if (err) return handleError(err);
+
       res.status(200).json({
-        response: "ok",
-        results: result
+        response: 'ok',
+        results
       })
     })
 }
