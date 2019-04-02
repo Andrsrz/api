@@ -83,39 +83,36 @@ export const update = (req, res, next) => {
 // Crea un join() entre dataset y publisher
 export const joins = (req, res, next) => {
   const DataObject = makeObject(req.params.firstCollection)
-  const query = aqp(req.query).filter
-  let _as = query.as || 'publisher'
+  const query = get_pagination_datas(aqp(req.query))
+  let _as = query.filter.as || 'publisher'
   
   // Crea un buscador de texto y
   // elimina el atributo 'text'
-  if (query.text) {
-    query.$text = { $search: query.text }
-    delete query['text']
+  if (query.filter.text) {
+    query.filter.$text = { $search: query.filter.text }
+    delete query.filter.text
   }
-
-  // Obtiene la lógica de selección para: $skip y $limit
-  let queryPag = get_pagination_datas(aqp(req.query))
 
   DataObject.count() // Sólo para obtener el total de registros
     .then(total => {
       DataObject.aggregate()
-        .match(queryPag.filter)
+        .match(query.filter)
         .lookup({
           from: req.params.secondCollection,
-          localField: query.local || 'publisher',
-          foreignField: query.foreign || 'publisher',
+          localField: query.filter.local || 'publisher',
+          foreignField: query.filter.foreign || 'publisher',
           as: _as
         })
         .unwind(_as)
-        .skip(queryPag.skip || 0)
-        .limit(queryPag.limit)
+        .skip(query.skip || 0)
+        .limit(query.limit)
         .exec((err, result) => {
           if (err) return handleError(err)
 
           res.status(200).json({
             pagination: {
-              pageSize: queryPag.limit,
-              page: parseInt((queryPag.skip || 0) / queryPag.limit) + 1,
+              pageSize: query.limit,
+              page: parseInt((query.skip || 0) / query.limit) + 1,
               total
             },
             results: result.map((DataObject) => DataObject)
