@@ -84,7 +84,15 @@ export const update = (req, res, next) => {
 export const joins = (req, res, next) => {
   const DataObject = makeObject(req.params.firstCollection)
   const query = get_pagination_datas(aqp(req.query))
-  let _as = query.filter.as || 'publisher'
+  const _as = query.filter.as || 'publisher'
+  let totalDataset = 0
+  let pags = 0
+  const lookUp = {
+    from: req.params.secondCollection,
+    localField: query.filter.local || 'publisher',
+    foreignField: query.filter.foreign || 'publisher',
+    as: _as
+  }
   
   // Crea un buscador de texto y
   // elimina el atributo 'text'
@@ -93,32 +101,40 @@ export const joins = (req, res, next) => {
     delete query.filter.text
   }
 
-  DataObject.count() // Sólo para obtener el total de registros
-    .then(total => {
-      DataObject.aggregate()
-        .match(query.filter)
-        .lookup({
-          from: req.params.secondCollection,
-          localField: query.filter.local || 'publisher',
-          foreignField: query.filter.foreign || 'publisher',
-          as: _as
-        })
-        .unwind(_as)
-        .skip(query.skip || 0)
-        .limit(query.limit)
-        .exec((err, result) => {
-          if (err) return handleError(err)
-
-          res.status(200).json({
-            pagination: {
-              pageSize: query.limit,
-              page: parseInt((query.skip || 0) / query.limit) + 1,
-              total
-            },
-            results: result.map((DataObject) => DataObject)
-          })
-        })
+  // Se aplica una promesa múltiple para devolver en primer instancia
+  // el total de resultados de acuerdo a sus filtrados 
+  // y posteriormente se obtiene el objeto resultante aplicandole: $skip y $limit
+  Promise.all([
+    DataObject.aggregate()
+      .match(query.filter)
+      .lookup(lookUp)
+      .unwind(_as)
+      .exec((err, result) => {
+        if (err) return handleError(err)
+        totalDataset = result.length
+      }),
+    DataObject.aggregate()
+      .match(query.filter)
+      .lookup(lookUp)
+      .unwind(_as)
+      .skip(query.skip || 0)
+      .limit(query.limit)
+      .exec((err, result) => {
+        if (err) return handleError(err)
+        pags = result
+      })
+  ]).then(values => {
+    res.status(200).json({
+      pagination: {
+        pageSize: query.limit,
+        page: parseInt((query.skip || 0) / query.limit) + 1,
+        total: totalDataset
+      },
+      results: pags.map((DataObject) => DataObject)
     })
+  }, reazon => {
+      handleError(reazon)
+  })
 }
 
 // Obtiene un filtrado de dataset de acuerdo a su identificador
