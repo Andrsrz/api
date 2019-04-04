@@ -101,6 +101,10 @@ export const joins = (req, res, next) => {
     delete query.filter.text
   }
 
+  if (!query.sort) {
+    query.sort = {modified: -1}
+  }
+
   // Se aplica una promesa múltiple para devolver en primer instancia
   // el total de resultados de acuerdo a sus filtrados 
   // y posteriormente se obtiene el objeto resultante aplicandole: $skip y $limit
@@ -119,6 +123,7 @@ export const joins = (req, res, next) => {
       .unwind(_as)
       .skip(query.skip || 0)
       .limit(query.limit)
+      .sort(query.sort)
       .exec((err, result) => {
         if (err) return handleError(err)
         pags = result
