@@ -58,7 +58,7 @@ export const create = (req, res, next) => {
   const update = req.body
 
   DataObject.create(update, (err) => {
-    if (err) return res.send(500, {error: err})
+    if (err) return res.status(500).send({error: err})
     else return res.status(200).json({
       response: "ok",
       message: "Succesfully saved"
@@ -72,7 +72,7 @@ export const update = (req, res, next) => {
   const update = req.body
 
   DataObject.findOneAndUpdate(filter, update, { upsert: true }, (err) => {
-    if (err) return res.send(500, {error: err})
+    if (err) return res.status(500).send({error: err})
     else return res.status(200).json({
       response: "ok",
       message: "Succesfully saved"
