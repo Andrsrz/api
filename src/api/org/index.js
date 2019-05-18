@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { middleware as query } from 'querymen'
 import { index, queries, create, update, joins, uniques } from './controller'
 import { authorization } from './auth'
+import { validate_body } from '../../services/validations'
 
 const router = new Router()
 
@@ -34,9 +35,9 @@ router.get('/:firstCollection/join/:secondCollection', joins)
 router.get('/:dataCollection/unique/:identifier', uniques)
 
 // Guarda coleciones de datos
-router.post('/:dataCollection', create)
+router.post('/:dataCollection', authorization, validate_body, create)
 
 // Actualiza colecciones de datos
-router.put('/:dataColeccion', authorization, update)
+router.put('/:dataColeccion', authorization, validate_body, update)
 
 export default router
