@@ -6,7 +6,7 @@ module.exports = {
     try {
       const payload = validate_token(req.headers.authorization)
 
-      if (payload) {
+      if (payload && req.query._id) {
         const DataObject = makeObject('dataset')
 
         DataObject.findOne({ _id: req.query._id })
@@ -23,6 +23,8 @@ module.exports = {
               message: error.message
             })
           })
+      } else if (payload) {
+        next()
       } else {
         res.status(500).json({
           response: 'error',
