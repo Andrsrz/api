@@ -38,6 +38,6 @@ router.get('/:dataCollection/unique/:identifier', uniques)
 router.post('/:dataCollection', authorization, validate_body, create)
 
 // Actualiza colecciones de datos
-router.put('/:dataColeccion', authorization, validate_body, update)
+router.put('/:dataCollection', authorization, validate_body, update)
 
 export default router
