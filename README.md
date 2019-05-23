@@ -143,9 +143,9 @@ Se genera la adición de la colección “publishers” dentro de la colección 
     "pageSize": 100,
     "page": 1,
     "total": 1
-  }
+  },
   "results": [
-    { ... },
+    { },
     ...
   ]
 }
@@ -163,7 +163,7 @@ Se genera la adición de la colección “publishers” dentro de la colección 
 {
   "response": "ok",
   "results": [
-  	{ ... }
+  	{ }
   ]
 }
 ```
