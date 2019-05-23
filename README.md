@@ -161,7 +161,7 @@ Se genera la adición de la colección “publishers” dentro de la colección 
 
 ```json
 {
-  "response": “ok”
+  "response": "ok",
   "results": [
   	{ ... }
   ]
@@ -181,8 +181,8 @@ Agrega un nuevo registro en la colección dataset
 
 ```json
 {
-  "response": “ok”
-  "message": “Successful saved”
+  "response": "ok",
+  "message": "Successful saved"
 }
 ```
 
@@ -198,7 +198,7 @@ Agrega un nuevo registro en la colección dataset
 
 ```json
 {
-  "response": “ok”
-  "message": “Successful saved”
+  "response": "ok",
+  "message": "Successful saved"
 }
 ```
