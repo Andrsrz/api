@@ -163,7 +163,7 @@ Se genera la adición de la colección “publishers” dentro de la colección 
 {
   "response": "ok",
   "results": [
-  	{ }
+    { }
   ]
 }
 ```
