@@ -138,12 +138,15 @@ Se genera la adición de la colección “publishers” dentro de la colección 
 * Regresa:
 
 		{
-		  pagination: {
-		    pageSize: 100,
-		    page: 1,
-		    total: 1
+		  "pagination": {
+		    "pageSize": 100,
+		    "page": 1,
+		    "total": 1
 		  }
-		  results: [ { ... }, ... ]
+		  "results": [
+		    { ... },
+		    ...
+		  ]
 		}
 
 ### /:dataCollection/unique/:identifier
