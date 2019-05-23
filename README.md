@@ -137,17 +137,19 @@ Se genera la adición de la colección “publishers” dentro de la colección 
 * Se pueden utilizar todos los filtrados, como se hace actualmente
 * Regresa:
 
-		{
-		  "pagination": {
-		    "pageSize": 100,
-		    "page": 1,
-		    "total": 1
-		  }
-		  "results": [
-		    { ... },
-		    ...
-		  ]
-		}
+```json
+{
+  "pagination": {
+    "pageSize": 100,
+    "page": 1,
+    "total": 1
+  }
+  "results": [
+    { ... },
+    ...
+  ]
+}
+```
 
 ### /:dataCollection/unique/:identifier
 
@@ -157,12 +159,14 @@ Se genera la adición de la colección “publishers” dentro de la colección 
 * Ejemplo: `/api/dataset/unique/un-titulo-aqui`
 * Regresa:
 
-		{
-		  "response": “ok”
-		  "results": [
-		  	{ ... }
-		  ]
-		}
+```json
+{
+  "response": “ok”
+  "results": [
+  	{ ... }
+  ]
+}
+```
 
 
 ### /:dataCollection
@@ -175,10 +179,12 @@ Agrega un nuevo registro en la colección dataset
 * Body: de acuerdo al esquema de `dataset`
 * Regresa:
 
-		{
-		  "response": “ok”
-		  "message": “Successful saved”
-		}
+```json
+{
+  "response": “ok”
+  "message": “Successful saved”
+}
+```
 
 ### /:dataCollection
 
@@ -190,7 +196,9 @@ Agrega un nuevo registro en la colección dataset
 * Body: de acuerdo al esquema de `dataset`
 * Regresa:
 
-		{
-		  "response": “ok”
-		  "message": “Successful saved”
-		}
+```json
+{
+  "response": “ok”
+  "message": “Successful saved”
+}
+```
