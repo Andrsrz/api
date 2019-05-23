@@ -121,3 +121,73 @@ Para expresar condiciones mas complejas que la igualdad absoluta, se pueden util
 
 ###### Ejemplo
 `/v2/(_data.collection_)?sort=-points,createdAt`
+
+
+## Nuevos endpoints agregados
+
+### /:firstCollection/join/:secondCollection
+
+Se genera la adición de la colección “publishers” dentro de la colección “dataset”
+
+* Método: `GET`
+* Ejemplos:
+	* `/api/dataset/join/publishers`
+	* `/api/dataset/join/publishers?accrualPeriodicity=quincenal`
+	
+* Se pueden utilizar todos los filtrados, como se hace actualmente
+* Regresa:
+
+		{
+		  pagination: {
+		    pageSize: 100,
+		    page: 1,
+		    total: 1
+		  }
+		  results: [ { ... }, ... ]
+		}
+
+### /:dataCollection/unique/:identifier
+
+Se genera la adición de la colección “publishers” dentro de la colección “dataset”, obteniendo sólo un dataset
+
+* Método: `GET`
+* Ejemplo: `/api/dataset/unique/un-titulo-aqui`
+* Regresa:
+
+		{
+		  "response": “ok”
+		  "results": [
+		  	{ ... }
+		  ]
+		}
+
+
+### /:dataCollection
+
+Agrega un nuevo registro en la colección dataset
+
+* Método: `POST`
+* Url: `/api/dataset`
+* Headers: `"Authorization": "<token>"`
+* Body: de acuerdo al esquema de `dataset`
+* Regresa:
+
+		{
+		  "response": “ok”
+		  "message": “Successful saved”
+		}
+
+### /:dataCollection
+
+Agrega un nuevo registro en la colección dataset
+
+* Método: `PUT`
+* Url: `/api/dataset?_id=<id de dataset a modificar>`
+* Headers: `"Authorization": "<token>"`
+* Body: de acuerdo al esquema de `dataset`
+* Regresa:
+
+		{
+		  "response": “ok”
+		  "message": “Successful saved”
+		}
